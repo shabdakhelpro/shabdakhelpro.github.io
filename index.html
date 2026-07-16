@@ -14,11 +14,11 @@
             --bg-card: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --clr-correct: #10b981;    /* 🟩 Green: Perfect Match */
-            --clr-matra-err: #3b82f6;  /* 🟦 Blue: Base Correct, Matra Wrong */
-            --clr-misplaced: #f59e0b;  /* 🟧 Orange: Letter Misplaced */
-            --clr-order-err: #8b5cf6;  /* 🟪 Purple: Conjunct Order Wrong */
-            --clr-absent: #334155;     /* 🟥 Dark Slate: Absent from word */
+            --clr-correct: #10b981;    /* 🟩 Green */
+            --clr-matra-err: #3b82f6;  /* 🟦 Blue */
+            --clr-misplaced: #f59e0b;  /* 🟧 Orange */
+            --clr-order-err: #8b5cf6;  /* 🟪 Purple */
+            --clr-absent: #334155;     /* 🟥 Slate */
             --clr-slot: #1e293b;
             --clr-accent: #6366f1;
         }
@@ -44,6 +44,32 @@
             border-bottom: 1px solid #334155;
             margin-bottom: 12px;
         }
+
+        /* Blinking Header Badges styling */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .blink-badge {
+            background-color: #ef4444;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            animation: blinker 1.2s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
         header h1 { font-size: 28px; font-weight: 800; letter-spacing: 1px; color: #f1f5f9; }
 
         .meta-container {
@@ -56,9 +82,12 @@
             padding: 8px 12px;
             background: var(--bg-card);
             border-radius: 8px;
+            font-size: 14px;
         }
         .date-badge { font-weight: 600; color: var(--text-muted); }
-        .cat-lives { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: bold; color: #f43f5e; }
+        .lives-wrapper { display: flex; align-items: center; gap: 8px; }
+        .cat-badge { font-size: 18px; }
+        .heart-display { letter-spacing: 2px; }
 
         .game-viewport {
             width: 100%;
@@ -163,10 +192,12 @@
             flex: 1; padding: 14px; border: none; border-radius: 8px;
             font-family: var(--font-main); font-size: 16px; font-weight: 700; cursor: pointer; color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-clear { background: #ef4444; }
+        .btn-clear { background: #475569; }
         .btn-submit { background: #10b981; }
         .btn-submit:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; }
+        .btn-skip { background: #f59e0b; color: white; margin-bottom: 8px; }
 
         .legend-bar {
             display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px;
@@ -187,8 +218,28 @@
         .meta-field label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .meta-field p { font-size: 16px; font-weight: 600; margin-top: 2px; }
 
+        /* Full Screen Video / Skip Ad Overlay */
+        .ad-fullscreen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.98); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px; text-align: center; display: none;
+        }
+        .ad-box-mock {
+            width: 100%; max-width: 400px; aspect-ratio: 9/16;
+            background: #1e293b; border: 4px solid var(--clr-accent);
+            border-radius: 16px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .ad-timer-badge {
+            position: absolute; top: 16px; right: 16px;
+            background: var(--clr-accent); color: white; font-weight: bold;
+            padding: 6px 14px; border-radius: 20px; font-size: 14px;
+        }
+
         .ad-wrapper-box {
-            width: 100%; min-height: 140px; background: #1e293b;
+            width: 100%; min-height: 100px; background: #1e293b;
             border: 2px dashed #334155; border-radius: 12px; display: flex;
             align-items: center; justify-content: center; color: var(--text-muted);
             font-size: 14px; text-align: center; margin-top: 15px; padding: 15px;
@@ -197,22 +248,35 @@
         @media(max-width: 480px) {
             .key-cap { font-size: 16px; padding: 10px 6px; min-width: 34px; }
             .tile-slot { height: 65px; font-size: 22px; }
+            .blink-badge { font-size: 9px; padding: 3px 6px; }
+            header h1 { font-size: 22px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>शब्दखेळ प्रो</h1>
+        <div class="header-container">
+            <span class="blink-badge">Free Marathi Language Game</span>
+            <h1>शब्दखेळ प्रो</h1>
+            <span class="blink-badge">Free Marathi Language Game</span>
+        </div>
     </header>
 
     <div class="meta-container">
         <div class="date-badge" id="lblGameDate">दिनांक: --</div>
-        <div class="cat-lives" id="lblCatLives">🐱 × 9</div>
+        <div class="lives-wrapper">
+            <span class="cat-badge">🐱</span>
+            <span class="heart-display" id="lblHearts">❤️❤️❤️❤️❤️❤️❤️❤️❤️</span>
+        </div>
     </div>
 
     <div class="game-viewport">
         <div class="board-canvas" id="boardCanvas"></div>
+
+        <button class="act-btn btn-skip" id="btnSkipAdAction">
+            ⏭️ १० सेकंद जाहिरात पाहून नवीन शब्द मिळवा
+        </button>
 
         <div class="legend-bar">
             <div class="legend-item"><div class="legend-box" style="background:var(--clr-correct)"></div> बरोबर</div>
@@ -244,16 +308,29 @@
             <div class="meta-field"><label>अर्थ (Meaning)</label><p id="tMeaning"></p></div>
             <div class="meta-field"><label>मराठी वाक्य (Sentence)</label><p id="tSentenceMr" style="color:#e2e8f0; font-style:italic;"></p></div>
             <div class="meta-field"><label>अनुवाद (Translation)</label><p id="tSentenceEn"></p></div>
-            <button class="act-btn" style="margin-top:10px; width:100%; background-color:#25d366;" id="btnShareWhatsApp">🔗 निकाल शेअर करा (WhatsApp)</button>
+            <button class="act-btn" style="margin-top:10px; width:100%; background-color:#25d366; font-size:18px;" id="btnShareWhatsApp">🔗 निकाल शेअर करा (WhatsApp)</button>
+            <button class="act-btn" style="margin-top:10px; width:100%; background-color:var(--clr-accent); font-size:18px;" id="btnNextWordEndgame">🎉 नवीन शब्द खेळा (Ad)</button>
         </div>
 
         <div class="ad-wrapper-box" id="adContainer"></div>
     </div>
 
+    <!-- Full-Screen Interactive Ad Simulator -->
+    <div class="ad-fullscreen-overlay" id="adVideoOverlay">
+        <div class="ad-box-mock">
+            <div class="ad-timer-badge" id="adTimerBadge">Ad: 10s</div>
+            <h2 style="font-size: 24px; margin-bottom: 8px; color: white;">ShabdaKhel Premium Ad</h2>
+            <p style="color: var(--text-muted); font-size: 14px; padding: 0 20px;">Support Marathi gaming! Loading your puzzle...</p>
+            <div style="font-size: 64px; margin-top: 30px;">🎮</div>
+        </div>
+    </div>
+
     <script>
-        const SHEET_CSV_URL = "PASTE_HERE"; 
+        // Hooked directly to your newly published Google Sheet CSV
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcXudAlMbMNShQ1EioQ6N90Gddy4_cEfdmb7uJiaYXIclZ6LatWc0P3pPX3NNr-HCQ8GXIDJ6tS8BC/pub?output=csv"; 
         const START_LIVES = 9.0;
-        const ADS_ENABLED = false; 
+        const STATE_TIMEOUT_MS = 10 * 60 * 1000; // 10-minute session integrity lock
+        const ADS_ENABLED = false; // Toggle to true when your site approval on AdSense finishes
         const ADSENSE_PUBLISHER_ID = "pub-5975509930049909";
 
         const CONSONANTS = [
@@ -270,10 +347,8 @@
         ];
 
         const FALLBACK_DATA = [
-            { word: "कमल", meaning_en: "Lotus", sentence_mr: "तलावात सुंदर कमल उमलले आहे.", sentence_en: "A beautiful lotus has bloomed in the lake." },
-            { word: "मराठी", meaning_en: "Marathi Language", sentence_mr: "आम्ही दररोज मराठी बोलतो.", sentence_en: "We speak Marathi every day." },
-            { word: "प्रयत्न", meaning_en: "Effort", sentence_mr: "यशस्वी होण्यासाठी सतत प्रयत्न करा.", sentence_en: "Make continuous efforts to be successful." },
-            { word: "महाराष्ट्र", meaning_en: "Maharashtra", sentence_mr: "महाराष्ट्र ही संतांची भूमी आहे.", sentence_en: "Maharashtra is the land of saints." }
+            { word: "महाराष्ट्र", meaning_en: "Maharashtra State", sentence_mr: "महाराष्ट्र हे सुंदर राज्य आहे.", sentence_en: "Maharashtra is a beautiful state." },
+            { word: "प्रयत्न", meaning_en: "Effort", sentence_mr: "यशस्वी होण्यासाठी सतत प्रयत्न करा.", sentence_en: "Make continuous efforts to be successful." }
         ];
 
         let targetWordData = null;
@@ -285,6 +360,7 @@
         
         let stagedRowGuesses = []; 
         let conjunctSelectionBuffer = [];
+        let poolOfWords = [...FALLBACK_DATA];
 
         function parseDevanagariSyllables(word) {
             const tiles = [];
@@ -339,8 +415,7 @@
         }
 
         async function initGameEngine() {
-            let pool = FALLBACK_DATA;
-            if (SHEET_CSV_URL && SHEET_CSV_URL !== "PASTE_HERE") {
+            if (SHEET_CSV_URL) {
                 try {
                     let res = await fetch(SHEET_CSV_URL);
                     if (res.ok) {
@@ -348,25 +423,127 @@
                         let rows = text.split("\n").map(r => r.split(","));
                         if (rows.length > 1) {
                             let headers = rows[0].map(h => h.trim().toLowerCase());
-                            pool = rows.slice(1).map(r => {
+                            poolOfWords = rows.slice(1).map(r => {
                                 let obj = {};
                                 headers.forEach((h, i) => { obj[h] = r[i] ? r[i].replace(/"/g, '').trim() : ""; });
                                 return obj;
                             }).filter(o => o.word);
                         }
                     }
-                } catch(e) { console.error("CSV lookup handling", e); }
+                } catch(e) { console.error("CSV lookup error", e); }
             }
 
             let today = new Date().toISOString().split('T')[0];
             document.getElementById("lblGameDate").innerText = `दिनांक: ${today}`;
-            targetWordData = pool.find(w => w.date === today) || pool[Math.floor(Math.random() * pool.length)];
-            parsedTargetTiles = parseDevanagariSyllables(targetWordData.word);
+
+            const loaded = loadGameStateFromLocalStorage();
+            if (loaded) {
+                targetWordData = loaded.targetWordData;
+                totalLives = loaded.totalLives;
+                currentGuessRowIndex = loaded.currentGuessRowIndex;
+                parsedTargetTiles = parseDevanagariSyllables(targetWordData.word);
+                
+                reconstructBoardFromSavedHistory(loaded.history);
+            } else {
+                pickNewRandomWord();
+            }
 
             renderGlobalKeyboard();
-            spawnNewGuessRow();
-            updateCatLivesDisplay();
+            updateHeartsDisplay();
             initAdLayout();
+        }
+
+        function pickNewRandomWord() {
+            if (poolOfWords.length === 0) poolOfWords = [...FALLBACK_DATA];
+            targetWordData = poolOfWords[Math.floor(Math.random() * poolOfWords.length)];
+            parsedTargetTiles = parseDevanagariSyllables(targetWordData.word);
+            totalLives = START_LIVES;
+            currentGuessRowIndex = 0;
+            gameEnded = false;
+            
+            document.getElementById("boardCanvas").innerHTML = "";
+            spawnNewGuessRow();
+        }
+
+        function saveGameStateToLocalStorage() {
+            const history = [];
+            for (let r = 0; r <= currentGuessRowIndex; r++) {
+                let rowEl = document.getElementById(`guessRow_${r}`);
+                if (rowEl) {
+                    let rowData = [];
+                    rowEl.querySelectorAll('.tile-slot').forEach(slot => {
+                        rowData.push({
+                            text: slot.innerText.replace("जोडाक्षर", "").split("\n")[0],
+                            classes: Array.from(slot.classList)
+                        });
+                    });
+                    history.push(rowData);
+                }
+            }
+
+            const state = {
+                timestamp: Date.now(),
+                targetWordData,
+                totalLives,
+                currentGuessRowIndex,
+                history
+            };
+            localStorage.setItem("shabdakhel_state", JSON.stringify(state));
+        }
+
+        function loadGameStateFromLocalStorage() {
+            const raw = localStorage.getItem("shabdakhel_state");
+            if (!raw) return null;
+            try {
+                const state = JSON.parse(raw);
+                if (Date.now() - state.timestamp < STATE_TIMEOUT_MS) {
+                    return state;
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        function reconstructBoardFromSavedHistory(history) {
+            let canvas = document.getElementById("boardCanvas");
+            canvas.innerHTML = "";
+
+            history.forEach((rowData, rIdx) => {
+                let rowEl = document.createElement("div");
+                rowEl.className = "guess-row";
+                rowEl.id = `guessRow_${rIdx}`;
+
+                rowData.forEach((tileData, tIdx) => {
+                    let slot = document.createElement("div");
+                    slot.className = tileData.classes.join(" ");
+                    slot.innerText = tileData.text;
+                    
+                    let target = parsedTargetTiles[tIdx];
+                    if (target && target.isConjunct && !tileData.classes.some(c => c.startsWith("state-"))) {
+                        slot.innerHTML = `<span class="jod-label">जोडाक्षर (${target.baseConsonants.length})</span>`;
+                    }
+                    
+                    if (rIdx === currentGuessRowIndex && !gameEnded) {
+                        slot.addEventListener("click", () => focusActiveSlot(tIdx));
+                    }
+                    rowEl.appendChild(slot);
+                });
+                canvas.appendChild(rowEl);
+            });
+
+            stagedRowGuesses = new Array(parsedTargetTiles.length).fill(null).map(() => ({
+                consonants: [], matraIndex: 1, text: ""
+            }));
+
+            if (totalLives <= 0 || checkWinConditionOnHistory(history)) {
+                endGameSequence(totalLives > 0);
+            } else {
+                focusActiveSlot(0);
+            }
+        }
+
+        function checkWinConditionOnHistory(history) {
+            let lastRow = history[history.length - 1];
+            return lastRow && lastRow.every(tile => tile.classes.includes("state-correct"));
         }
 
         function spawnNewGuessRow() {
@@ -538,7 +715,7 @@
                 slots[idx].classList.remove("focused");
             });
 
-            updateCatLivesDisplay();
+            updateHeartsDisplay();
 
             let rowPerfectWin = matchingArray.every(val => val === true);
             if (rowPerfectWin) {
@@ -548,21 +725,38 @@
             } else {
                 currentGuessRowIndex++;
                 spawnNewGuessRow();
+                saveGameStateToLocalStorage();
             }
         });
 
-        function updateCatLivesDisplay() {
-            let container = document.getElementById("lblCatLives");
+        function updateHeartsDisplay() {
+            let container = document.getElementById("lblHearts");
             if (totalLives <= 0) {
-                container.innerText = "☠️ (0 Lives)";
-            } else {
-                container.innerText = `🐱 × ${totalLives.toFixed(1)}`;
+                container.innerText = "🖤🖤🖤🖤🖤🖤🖤🖤🖤 (गेम संपला)";
+                return;
             }
+
+            let heartString = "";
+            let remaining = totalLives;
+
+            for (let i = 0; i < 9; i++) {
+                if (remaining >= 1.0) {
+                    heartString += "❤️";
+                    remaining -= 1.0;
+                } else if (remaining === 0.5) {
+                    heartString += "💔";
+                    remaining -= 0.5;
+                } else {
+                    heartString += "🖤";
+                }
+            }
+            container.innerText = heartString;
         }
 
         function endGameSequence(isWin) {
             gameEnded = true;
             document.getElementById("inputDock").style.display = "none";
+            document.getElementById("btnSkipAdAction").style.display = "none";
             let panel = document.getElementById("teachingPanel");
             panel.style.display = "block";
 
@@ -571,7 +765,55 @@
             document.getElementById("tMeaning").innerText = targetWordData.meaning_en;
             document.getElementById("tSentenceMr").innerText = targetWordData.sentence_mr;
             document.getElementById("tSentenceEn").innerText = targetWordData.sentence_en;
+            
+            saveGameStateToLocalStorage();
         }
+
+        // --- Ad Processing Interstitials ---
+        function triggerVideoAdBreak(onCompleteCallback) {
+            let adScreen = document.getElementById("adVideoOverlay");
+            let timerBadge = document.getElementById("adTimerBadge");
+            adScreen.style.display = "flex";
+            
+            let timeLeft = 10;
+            timerBadge.innerText = `Ad: ${timeLeft}s`;
+
+            let interval = setInterval(() => {
+                timeLeft--;
+                timerBadge.innerText = `Ad: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    adScreen.style.display = "none";
+                    onCompleteCallback();
+                }
+            }, 1000);
+        }
+
+        document.getElementById("btnSkipAdAction").addEventListener("click", () => {
+            triggerVideoAdBreak(() => {
+                localStorage.removeItem("shabdakhel_state");
+                document.getElementById("teachingPanel").style.display = "none";
+                document.getElementById("inputDock").style.display = "flex";
+                document.getElementById("btnSkipAdAction").style.display = "inline-flex";
+                
+                pickNewRandomWord();
+                updateHeartsDisplay();
+                saveGameStateToLocalStorage();
+            });
+        });
+
+        document.getElementById("btnNextWordEndgame").addEventListener("click", () => {
+            triggerVideoAdBreak(() => {
+                localStorage.removeItem("shabdakhel_state");
+                document.getElementById("teachingPanel").style.display = "none";
+                document.getElementById("inputDock").style.display = "flex";
+                document.getElementById("btnSkipAdAction").style.display = "inline-flex";
+                
+                pickNewRandomWord();
+                updateHeartsDisplay();
+                saveGameStateToLocalStorage();
+            });
+        });
 
         document.getElementById("btnShareWhatsApp").addEventListener("click", () => {
             let rowsText = "";
@@ -593,7 +835,7 @@
         function initAdLayout() {
             let container = document.getElementById("adContainer");
             if (!ADS_ENABLED) {
-                container.innerText = `[ जाहिरात जागा: ca-pub-${ADSENSE_PUBLISHER_ID} / Full Responsive Unit ]`;
+                container.innerText = `[ जाहिरात जागा: ca-pub-${ADSENSE_PUBLISHER_ID} / Mobile Premium Banner ]`;
             } else {
                 container.innerHTML = `
                     <ins class="adsbygoogle"
